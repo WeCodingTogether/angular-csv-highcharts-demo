@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import highchartsHeatmap from 'highcharts/modules/heatmap';
 import accessibility  from 'highcharts/modules/accessibility';
@@ -13,7 +13,7 @@ accessibility(Highcharts);
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.css']
 })
-export class HeatmapComponent {
+export class HeatmapComponent implements OnInit {
 
   subscription!: Subscription;
   products: Product[] = [];
@@ -22,7 +22,90 @@ export class HeatmapComponent {
   seriesDataForValue: number[][] = [];
 
   HighCharts: typeof Highcharts = Highcharts;
-  chartOptions: Highcharts.Options = {
+  valueChartOptions!: Highcharts.Options;
+
+  constructor(
+    private csvReaderService: CsvReaderService,
+    private changeDetector: ChangeDetectorRef
+  ) {}
+
+
+  ngOnInit(): void {
+    this.subscription = this.csvReaderService.getProducts()
+      .pipe(distinctUntilChanged())
+      .subscribe(cavProductData => {
+        this.products = cavProductData;
+        this.seriesDataForValue = this.addTotalValue(this.groupProducts());// after get products data then execute this method
+        // setTimeout(() => {
+        //   this.initValueChart();
+        // }, 1000);
+        this.changeDetector.detectChanges();
+        this.initValueChart();
+
+      })
+  }
+
+  ngDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  groupProducts(): Map<string, Product[]> {
+  //console.log('groupProducts is launching ...');
+    let groupProducts = new Map<string, Product[]>();
+
+    if (!this.products || this.products.length === 0) {
+    //console.log('this.products is empty or undefined');
+    return new Map<string, Product[]>();
+  }
+
+  for(const product of this.products) {
+    const key = product.category + product.group;
+    console.log("key: " + key);
+    if(!groupProducts.has(key)) {
+      groupProducts.set(key, []);
+    }
+    groupProducts.get(key)?.push(product);
+  }
+
+  return groupProducts;
+  }
+
+  addTotalValue(groupProducts: Map<string, Product[]>): number[][]  {
+    console.log('addTotalValue is launching...');
+    for(const [key, products] of groupProducts) {
+      const matchResult = key.match(/(Cat\d+)(Grp\d+)/);
+      //console.log("matchResult: " +matchResult);
+      if(matchResult) {
+        //const [category, group] = matchResult.slice(1);
+        const category = matchResult[1];
+        const group = matchResult[2];
+        console.log("group: " + group + "; category: " + category);
+
+        const xIndex = this.xAxisGrp.indexOf(group);
+        const yIndex = this.yAxisCat.indexOf(category);
+        console.log("xIndex: " + xIndex + " ; yIndex" + yIndex);
+
+        if(xIndex !== -1 && yIndex !== -1) {
+          this.getValue(products, xIndex, yIndex);
+        }
+      }
+    }
+    console.log('seriesData', this.seriesDataForValue);
+    return this.seriesDataForValue;
+  }
+
+  getValue(products: Product[], xIndex: number, yIndex: number): number[][] {
+    const totalValue = products.reduce((sum, product) => sum + product.value, 0);
+    let dataForValue: number[] = [];
+    dataForValue[0] = xIndex;
+    dataForValue[1] = yIndex;
+    dataForValue[2] = totalValue
+    this.seriesDataForValue.push(dataForValue);
+    return this.seriesDataForValue;
+  }
+
+  initValueChart() {
+    return this.valueChartOptions = {
     chart: {
         type: 'heatmap',
         marginTop: 40,
@@ -39,11 +122,11 @@ export class HeatmapComponent {
     },
 
     xAxis: {
-        categories: ['Grp1', 'Grp', 'Grp2']
+        categories: this.xAxisGrp
     },
 
     yAxis: {
-        categories: ['Cat1', 'Cat2', 'Cat3'],
+        categories: this.yAxisCat,
         reversed: false
     },
 
@@ -106,75 +189,6 @@ export class HeatmapComponent {
         }]
     }
   }
-
-  constructor(private csvReaderService: CsvReaderService) {}
-  ngOnInit(): void {
-    this.subscription = this.csvReaderService.getProducts()
-      .pipe(distinctUntilChanged())
-      .subscribe(cavProductData => {
-        this.products = cavProductData;
-        this.seriesDataForValue = this.addTotalValue(this.groupProducts());// after get products data then execute this method
-        //this.initChart();
-      })
-  }
-
-  ngDestroy() {
-    this.subscription.unsubscribe();
-  }
-
-  groupProducts(): Map<string, Product[]> {
-  //console.log('groupProducts is launching ...');
-  let groupProducts = new Map<string, Product[]>();
-
-  if (!this.products || this.products.length === 0) {
-    //console.log('this.products is empty or undefined');
-    return new Map<string, Product[]>();
-  }
-
-  for(const product of this.products) {
-    const key = product.category + product.group;
-    console.log("key: " + key);
-    if(!groupProducts.has(key)) {
-      groupProducts.set(key, []);
-    }
-    groupProducts.get(key)?.push(product);
-  }
-
-  return groupProducts;
-  }
-
-  addTotalValue(groupProducts: Map<string, Product[]>): number[][]  {
-    console.log('addTotalValue is launching...');
-    for(const [key, products] of groupProducts) {
-      const matchResult = key.match(/(Cat\d+)(Grp\d+)/);
-      //console.log("matchResult: " +matchResult);
-      if(matchResult) {
-        //const [category, group] = matchResult.slice(1);
-        const category = matchResult[1];
-        const group = matchResult[2];
-        console.log("group: " + group + "; category: " + category);
-
-        const xIndex = this.xAxisGrp.indexOf(group);
-        const yIndex = this.yAxisCat.indexOf(category);
-        console.log("xIndex: " + xIndex + " ; yIndex" + yIndex);
-
-        if(xIndex !== -1 && yIndex !== -1) {
-          this.getValue(products, xIndex, yIndex);
-        }
-      }
-    }
-    console.log('seriesData', this.seriesDataForValue);
-    return this.seriesDataForValue;
-  }
-
-  getValue(products: Product[], xIndex: number, yIndex: number): number[][] {
-    const totalValue = products.reduce((sum, product) => sum + product.value, 0);
-    let dataForValue: number[] = [];
-    dataForValue[0] = xIndex;
-    dataForValue[1] = yIndex;
-    dataForValue[2] = totalValue
-    this.seriesDataForValue.push(dataForValue);
-    return this.seriesDataForValue;
   }
 
 }

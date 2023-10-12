@@ -5,7 +5,7 @@ import { CsvReaderComponent } from './csv-reader/csv-reader.component';
 
 const routes: Routes = [
   { path: 'sample-heatmap', component: HeatmapComponent },
-  { path: 'product-heatmap', component: CsvReaderComponent }
+  { path: 'product-Information', component: CsvReaderComponent }
 ];
 
 @NgModule({
