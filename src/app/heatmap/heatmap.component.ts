@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import highchartsHeatmap from 'highcharts/modules/heatmap';
 import accessibility  from 'highcharts/modules/accessibility';
+import { Product } from '../product';
+import { Subscription, distinctUntilChanged } from 'rxjs';
+import { CsvReaderService } from '../csv-reader.service';
 highchartsHeatmap(Highcharts);
 accessibility(Highcharts);
 
@@ -11,6 +14,12 @@ accessibility(Highcharts);
   styleUrls: ['./heatmap.component.css']
 })
 export class HeatmapComponent {
+
+  subscription!: Subscription;
+  products: Product[] = [];
+  xAxisGrp: string[] = ['Grp1', 'Grp2', 'Grp3'];
+  yAxisCat: string[] = ['Cat1', 'Cat2', 'Cat3'];
+  seriesDataForValue: number[][] = [];
 
   HighCharts: typeof Highcharts = Highcharts;
   chartOptions: Highcharts.Options = {
@@ -35,7 +44,7 @@ export class HeatmapComponent {
 
     yAxis: {
         categories: ['Cat1', 'Cat2', 'Cat3'],
-        reversed: true
+        reversed: false
     },
 
     accessibility: {
@@ -72,9 +81,10 @@ export class HeatmapComponent {
         type: 'heatmap',
         name: 'Products Info',
         borderWidth: 1,
-        data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
-            [1, 0, 92], [1, 1, 58], [1, 2, 78],
-            [2, 0, 35], [2, 1, 15], [2, 2, 123],],
+        // data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
+        //     [1, 0, 92], [1, 1, 58], [1, 2, 78],
+        //     [2, 0, 35], [2, 1, 15], [2, 2, 123],],
+        data: this.seriesDataForValue,
         dataLabels: {
             enabled: true,
             color: '#000000'
@@ -97,5 +107,74 @@ export class HeatmapComponent {
     }
   }
 
-  
+  constructor(private csvReaderService: CsvReaderService) {}
+  ngOnInit(): void {
+    this.subscription = this.csvReaderService.getProducts()
+      .pipe(distinctUntilChanged())
+      .subscribe(cavProductData => {
+        this.products = cavProductData;
+        this.seriesDataForValue = this.addTotalValue(this.groupProducts());// after get products data then execute this method
+        //this.initChart();
+      })
+  }
+
+  ngDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  groupProducts(): Map<string, Product[]> {
+  //console.log('groupProducts is launching ...');
+  let groupProducts = new Map<string, Product[]>();
+
+  if (!this.products || this.products.length === 0) {
+    //console.log('this.products is empty or undefined');
+    return new Map<string, Product[]>();
+  }
+
+  for(const product of this.products) {
+    const key = product.category + product.group;
+    console.log("key: " + key);
+    if(!groupProducts.has(key)) {
+      groupProducts.set(key, []);
+    }
+    groupProducts.get(key)?.push(product);
+  }
+
+  return groupProducts;
+  }
+
+  addTotalValue(groupProducts: Map<string, Product[]>): number[][]  {
+    console.log('addTotalValue is launching...');
+    for(const [key, products] of groupProducts) {
+      const matchResult = key.match(/(Cat\d+)(Grp\d+)/);
+      //console.log("matchResult: " +matchResult);
+      if(matchResult) {
+        //const [category, group] = matchResult.slice(1);
+        const category = matchResult[1];
+        const group = matchResult[2];
+        console.log("group: " + group + "; category: " + category);
+
+        const xIndex = this.xAxisGrp.indexOf(group);
+        const yIndex = this.yAxisCat.indexOf(category);
+        console.log("xIndex: " + xIndex + " ; yIndex" + yIndex);
+
+        if(xIndex !== -1 && yIndex !== -1) {
+          this.getValue(products, xIndex, yIndex);
+        }
+      }
+    }
+    console.log('seriesData', this.seriesDataForValue);
+    return this.seriesDataForValue;
+  }
+
+  getValue(products: Product[], xIndex: number, yIndex: number): number[][] {
+    const totalValue = products.reduce((sum, product) => sum + product.value, 0);
+    let dataForValue: number[] = [];
+    dataForValue[0] = xIndex;
+    dataForValue[1] = yIndex;
+    dataForValue[2] = totalValue
+    this.seriesDataForValue.push(dataForValue);
+    return this.seriesDataForValue;
+  }
+
 }
