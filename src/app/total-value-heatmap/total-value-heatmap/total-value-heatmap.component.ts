@@ -2,18 +2,18 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import highchartsHeatmap from 'highcharts/modules/heatmap';
 import accessibility  from 'highcharts/modules/accessibility';
-import { Product } from '../product';
+import { Product } from '../../product';
 import { Subscription, distinctUntilChanged } from 'rxjs';
-import { CsvReaderService } from '../csv-reader.service';
+import { CsvReaderService } from '../../csv-reader.service';
 highchartsHeatmap(Highcharts);
 accessibility(Highcharts);
 
 @Component({
-  selector: 'app-heatmap',
-  templateUrl: './heatmap.component.html',
-  styleUrls: ['./heatmap.component.css']
+  selector: 'app-total-value-heatmap',
+  templateUrl: './total-value-heatmap.component.html',
+  styleUrls: ['./total-value-heatmap.component.css']
 })
-export class HeatmapComponent implements OnInit {
+export class TotalValueHeatmapComponent implements OnInit {
 
   subscription!: Subscription;
   products: Product[] = [];
@@ -140,8 +140,8 @@ export class HeatmapComponent implements OnInit {
 
     colorAxis: {
         min: 0,
-        minColor: '#00ffbf',
-        maxColor: '#867979'
+        minColor: '#51abb5',
+        maxColor: '#bd6dcf'
     },
 
     legend: {
@@ -164,10 +164,10 @@ export class HeatmapComponent implements OnInit {
         type: 'heatmap',
         name: 'Products Info',
         borderWidth: 1,
-        data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
-            [1, 0, 92], [1, 1, 58], [1, 2, 78],
-            [2, 0, 35], [2, 1, 15], [2, 2, 123],],
-        // data: this.seriesDataForValue,
+        // data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
+        //     [1, 0, 92], [1, 1, 58], [1, 2, 78],
+        //     [2, 0, 35], [2, 1, 15], [2, 2, 123],],
+        data: this.seriesDataForValue,
         dataLabels: {
             enabled: true,
             color: '#000000'
