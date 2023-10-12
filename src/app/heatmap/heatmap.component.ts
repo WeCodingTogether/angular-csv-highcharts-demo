@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import highchartsHeatmap from 'highcharts/modules/heatmap';
+import accessibility  from 'highcharts/modules/accessibility';
 highchartsHeatmap(Highcharts);
+accessibility(Highcharts);
 
 @Component({
   selector: 'app-heatmap',
@@ -21,7 +23,7 @@ export class HeatmapComponent {
 
 
     title: {
-        text: 'Sales per employee per weekday',
+        text: 'Total Value',
         style: {
             fontSize: '1em'
         }
@@ -39,8 +41,8 @@ export class HeatmapComponent {
     accessibility: {
         point: {
             descriptionFormat: '{(add index 1)}. ' +
-                '{series.xAxis.categories.(x)} sales ' +
-                '{series.yAxis.categories.(y)}, {value}.'
+                '{series.xAxis.categories.(x)} and  ' +
+                '{series.yAxis.categories.(y)}, total value is {value}.'
         }
     },
 
@@ -60,14 +62,15 @@ export class HeatmapComponent {
     },
 
     tooltip: {
-        format: '<b>{series.xAxis.categories.(point.x)}</b> sold<br>' +
-            '<b>{point.value}</b> items on <br>' +
-            '<b>{series.yAxis.categories.(point.y)}</b>'
+        format: '<b>{series.xAxis.categories.(point.x)}</b> and ' +
+                '<b>{series.yAxis.categories.(point.y)}</b><br>' +
+                '<b>Total Value is {point.value}</b><br>'
+
     },
 
     series: [{
         type: 'heatmap',
-        name: 'Sales per employee',
+        name: 'Products Info',
         borderWidth: 1,
         data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
             [1, 0, 92], [1, 1, 58], [1, 2, 78],
@@ -92,6 +95,7 @@ export class HeatmapComponent {
             }
         }]
     }
-
   }
+
+  
 }
