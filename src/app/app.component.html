@@ -3,10 +3,12 @@
 
   <h2>Navigation page</h2>
   <br>
-  <nav>
-    <a routerLink="/total-value-heatmap" routerLinkActive="active" ariaCurrentWhenActive="page">Total Value Heatmap</a>
-    <a routerLink="/total-number-heatmap" routerLinkActive="active" ariaCurrentWhenActive="page">Total Number Heatmap</a>
-    <a routerLink="/product-Information" routerLinkActive="active" ariaCurrentWhenActive="page">Products Information</a>
-    <a routerLink="/heatmap" routerLinkActive="active" ariaCurrentWhenActive="page">Sample Heatmap</a>
-  </nav>
+  <div class="nav-link">
+    <nav>
+      <a routerLink="/product-Information" routerLinkActive="active" ariaCurrentWhenActive="page">Products Information</a>
+      <a routerLink="/total-value-heatmap" routerLinkActive="active" ariaCurrentWhenActive="page">Total Value Heatmap</a>
+      <a routerLink="/total-number-heatmap" routerLinkActive="active" ariaCurrentWhenActive="page">Total Number Heatmap</a>
+      <a routerLink="/heatmap" routerLinkActive="active" ariaCurrentWhenActive="page">Sample Heatmap</a>
+    </nav>
+  </div>
   <router-outlet></router-outlet>

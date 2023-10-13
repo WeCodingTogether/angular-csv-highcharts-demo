@@ -39,7 +39,7 @@ export class HeatmapComponent implements OnInit {
         // setTimeout(() => {
         //   this.initValueChart();
         // }, 1000);
-        this.changeDetector.detectChanges();
+        //this.changeDetector.detectChanges();
         this.initValueChart();
 
       })
@@ -106,89 +106,92 @@ export class HeatmapComponent implements OnInit {
 
   initValueChart() {
     return this.valueChartOptions = {
-    chart: {
-        type: 'heatmap',
-        marginTop: 40,
-        marginBottom: 80,
-        plotBorderWidth: 1
-    },
+      credits: {
+        enabled: false,  // exclusive watermark of highcharts
+      },
+      chart: {
+          type: 'heatmap',
+          marginTop: 40,
+          marginBottom: 80,
+          plotBorderWidth: 1
+      },
 
 
-    title: {
-        text: 'Total Value',
-        style: {
-            fontSize: '1em'
-        }
-    },
+      title: {
+          text: 'Sample Data',
+          style: {
+              fontSize: '1em'
+          }
+      },
 
-    xAxis: {
-        categories: this.xAxisGrp
-    },
+      xAxis: {
+          categories: this.xAxisGrp,
+          // tickInterval:2
+      },
 
-    yAxis: {
-        categories: this.yAxisCat,
-        reversed: false
-    },
+      yAxis: {
+          categories: this.yAxisCat,
+          reversed: false,
 
-    accessibility: {
-        point: {
-            descriptionFormat: '{(add index 1)}. ' +
-                '{series.xAxis.categories.(x)} and  ' +
-                '{series.yAxis.categories.(y)}, total value is {value}.'
-        }
-    },
 
-    colorAxis: {
-        min: 0,
-        minColor: '#00ffbf',
-        maxColor: '#867979'
-    },
+      },
 
-    legend: {
-        align: 'right',
-        layout: 'vertical',
-        margin: 0,
-        verticalAlign: 'top',
-        y: 25,
-        symbolHeight: 280
-    },
+      accessibility: {
+          point: {
+              descriptionFormat: '{(add index 1)}. ' +
+                  '{series.xAxis.categories.(x)} and  ' +
+                  '{series.yAxis.categories.(y)}, total value is {value}.'
+          }
+      },
 
-    tooltip: {
-        format: '<b>{series.xAxis.categories.(point.x)}</b> and ' +
-                '<b>{series.yAxis.categories.(point.y)}</b><br>' +
-                '<b>Total Value is {point.value}</b><br>'
+      colorAxis: {
+          min: 0,
+          minColor: '#00ffbf',
+          maxColor: '#867979'
+      },
 
-    },
+      legend: {
+          enabled: false
+      },
 
-    series: [{
-        type: 'heatmap',
-        name: 'Products Info',
-        borderWidth: 1,
-        data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
-            [1, 0, 92], [1, 1, 58], [1, 2, 78],
-            [2, 0, 35], [2, 1, 15], [2, 2, 123],],
-        // data: this.seriesDataForValue,
-        dataLabels: {
-            enabled: true,
-            color: '#000000'
-        }
-    }],
+      tooltip: {
+          format: '<b>{series.xAxis.categories.(point.x)}</b> and ' +
+                  '<b>{series.yAxis.categories.(point.y)}</b><br>' +
+                  '<b>Total Value is {point.value}</b><br>'
 
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
+      },
+
+      series: [{
+          type: 'heatmap',
+          name: 'Products Info',
+          borderWidth: 1,
+          data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
+              [1, 0, 92], [1, 1, 58], [1, 2, 78],
+              [2, 0, 35], [2, 1, 15], [2, 2, 123],],
+          // data: this.seriesDataForValue,
+          dataLabels: {
+              enabled: true,
+              color: '#000000'
+          },
+          colsize: 0.6,
+          rowsize: 0.8
+      }],
+
+      responsive: {
+          rules: [{
+              condition: {
+                  maxWidth: 500
+              },
+              chartOptions: {
                 yAxis: {
                     labels: {
                         format: '{substr value 0 1}'
                     }
                 }
-            }
-        }]
+              }
+          }]
+      }
     }
-  }
   }
 
 }

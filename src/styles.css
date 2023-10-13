@@ -16,6 +16,11 @@ h3 {
   text-align: center;
 }
 
+nav {
+  display: flex;
+  justify-content: space-around;
+}
+
 a {
   padding: 20px;
   background-color: rgb(51, 46, 118);
@@ -34,4 +39,14 @@ a:hover {
 
 .csv-data {
   margin-left: 2rem;
+}
+
+.hetamap-container {
+  display: flex;
+  justify-content:center
+}
+
+.nav-link {
+  display: flex;
+  justify-content: center
 }
