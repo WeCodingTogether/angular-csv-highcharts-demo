@@ -5,6 +5,7 @@ import accessibility  from 'highcharts/modules/accessibility';
 import { Product } from '../product';
 import { Subscription, distinctUntilChanged } from 'rxjs';
 import { CsvReaderService } from '../csv-reader.service';
+import { ActivatedRoute } from '@angular/router';
 highchartsHeatmap(Highcharts);
 accessibility(Highcharts);
 
@@ -26,12 +27,14 @@ export class HeatmapComponent implements OnInit {
 
   constructor(
     private csvReaderService: CsvReaderService,
+    private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef
   ) {}
 
 
   ngOnInit(): void {
-    this.subscription = this.csvReaderService.getProducts()
+    this.route.params.subscribe( params => {
+      this.subscription = this.csvReaderService.getProducts()
       .pipe(distinctUntilChanged())
       .subscribe(cavProductData => {
         this.products = cavProductData;
@@ -43,6 +46,8 @@ export class HeatmapComponent implements OnInit {
         this.initValueChart();
 
       })
+    })
+
   }
 
   ngDestroy() {

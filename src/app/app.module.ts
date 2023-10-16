@@ -10,12 +10,14 @@ import { CsvReaderComponent } from './csv-reader/csv-reader.component';
 import { TotalNumberHeatmapComponent } from './total-number-heatmap/total-number-heatmap/total-number-heatmap.component';
 import { TotalNumberHeatmapModule } from './total-number-heatmap/total-number-heatmap.module';
 import { TotalValueHeatmapModule } from './total-value-heatmap/total-value-heatmap.module';
+import { KendoHeamapComponent } from './kendo-heamap/kendo-heamap.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeatmapComponent,
     CsvReaderComponent,
+    KendoHeamapComponent,
   ],
   imports: [
     BrowserModule,

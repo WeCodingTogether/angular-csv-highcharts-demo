@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import highchartsHeatmap from 'highcharts/modules/heatmap';
 import accessibility  from 'highcharts/modules/accessibility';
@@ -26,7 +26,7 @@ export class TotalValueHeatmapComponent implements OnInit {
 
   constructor(
     private csvReaderService: CsvReaderService,
-    private changeDetector: ChangeDetectorRef
+    // private changeDetector: ChangeDetectorRef
   ) {}
 
 
@@ -130,7 +130,7 @@ export class TotalValueHeatmapComponent implements OnInit {
 
       yAxis: {
           categories: this.yAxisCat,
-          reversed: false
+          reversed: false,
       },
 
       accessibility: {
@@ -148,14 +148,7 @@ export class TotalValueHeatmapComponent implements OnInit {
       },
 
       legend: {
-        enabled: false
-          // align: 'right',
-          // layout: 'vertical',
-          // margin: 0,
-          // verticalAlign: 'top',
-          // y: 25,
-          // symbolHeight: 280
-
+        enabled: false,
       },
 
       tooltip: {
@@ -169,9 +162,6 @@ export class TotalValueHeatmapComponent implements OnInit {
           type: 'heatmap',
           name: 'Products Info',
           borderWidth: 1,
-          // data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
-          //     [1, 0, 92], [1, 1, 58], [1, 2, 78],
-          //     [2, 0, 35], [2, 1, 15], [2, 2, 123],],
           data: this.seriesDataForValue,
           dataLabels: {
               enabled: true,

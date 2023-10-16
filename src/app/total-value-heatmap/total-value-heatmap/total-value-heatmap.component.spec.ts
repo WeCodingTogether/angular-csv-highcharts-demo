@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HeatmapComponent } from 'src/app/heatmap/heatmap.component';
 
-import { HeatmapComponent } from './total-value-heatmap.component';
 
 describe('HeatmapComponent', () => {
   let component: HeatmapComponent;

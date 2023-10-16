@@ -5,6 +5,7 @@ import accessibility  from 'highcharts/modules/accessibility';
 import { Product } from '../../product';
 import { Subscription, distinctUntilChanged } from 'rxjs';
 import { CsvReaderService } from '../../csv-reader.service';
+import { ActivatedRoute } from '@angular/router';
 highchartsHeatmap(Highcharts);
 accessibility(Highcharts);
 
@@ -26,19 +27,25 @@ export class TotalNumberHeatmapComponent {
 
   constructor(
     private csvReaderService: CsvReaderService,
+    private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef
   ) {}
 
 
   ngOnInit(): void {
-    this.subscription = this.csvReaderService.getProducts()
-      .pipe(distinctUntilChanged())
-      .subscribe(cavProductData => {
-        this.products = cavProductData;
-        this.seriesData = this.addTotalValue(this.groupProducts());// after get products data then execute this method
-        //this.changeDetector.detectChanges();
-        this.initValueChart();
-      })
+    this.route.params.subscribe(
+      params => {
+        this.subscription = this.csvReaderService.getProducts()
+          .pipe(distinctUntilChanged())
+          .subscribe(cavProductData => {
+            this.products = cavProductData;
+            this.seriesData = this.addTotalValue(this.groupProducts());// after get products data then execute this method
+            //this.changeDetector.detectChanges();
+            this.initValueChart();
+           })
+      }
+    )
+
   }
 
   ngDestroy() {
@@ -133,7 +140,7 @@ export class TotalNumberHeatmapComponent {
           point: {
               descriptionFormat: '{(add index 1)}. ' +
                   '{series.xAxis.categories.(x)} and  ' +
-                  '{series.yAxis.categories.(y)}, total value is {value}.'
+                  '{series.yAxis.categories.(y)}, total number is {value}.'
           }
       },
 
@@ -150,7 +157,7 @@ export class TotalNumberHeatmapComponent {
       tooltip: {
           format: '<b>{series.xAxis.categories.(point.x)}</b> and ' +
                   '<b>{series.yAxis.categories.(point.y)}</b><br>' +
-                  '<b>Total Value is {point.value}</b><br>'
+                  '<b>Total Number is {point.value}</b><br>'
 
       },
 
@@ -158,9 +165,6 @@ export class TotalNumberHeatmapComponent {
           type: 'heatmap',
           name: 'Products Info',
           borderWidth: 1,
-          // data: [[0, 0, 10], [0, 1, 19], [0, 2, 8],
-          //     [1, 0, 92], [1, 1, 58], [1, 2, 78],
-          //     [2, 0, 35], [2, 1, 15], [2, 2, 123],],
           data: this.seriesData,
           dataLabels: {
               enabled: true,
